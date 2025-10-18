@@ -3,7 +3,13 @@ from typing import Protocol, Mapping
 
 class AuthProvider(Protocol):
     # TODO: Implement
-    pass
+    def auth_headers(self) -> Mapping[str, str]:
+        """
+
+        Returns:
+
+        """
+        return {}
 
 
 class BearerAuth:
