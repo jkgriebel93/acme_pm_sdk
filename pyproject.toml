@@ -7,7 +7,9 @@ authors = [
     { name = "John Griebel", email = "jkgriebel93@gmail.com" }
 ]
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "httpx>=0.28.1",
+]
 
 [build-system]
 requires = ["hatchling"]
