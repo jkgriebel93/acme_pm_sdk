@@ -1,0 +1,14 @@
+[project]
+name = "acme-pm-sdk"
+version = "0.1.0"
+description = "Exploratory project built as an exercise with ChatGPT"
+readme = "README.md"
+authors = [
+    { name = "John Griebel", email = "jkgriebel93@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
