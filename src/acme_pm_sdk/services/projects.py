@@ -2,16 +2,39 @@ from typing import List, Optional
 
 from acme_pm_sdk.models.project import Project
 
-# TODO: Pagination support, async project service, task model & service are upcoming
+# TODO: Retries and error mapping
 
 class ProjectsAPI:
     def __init__(self, transport):
         self._transport = transport
 
-    def list_projects(self) -> List[Project]:
-        response = self._transport.request("GET", "/projects")
-        data = response.json()
-        return [Project(**item) for item in data]
+    def list_projects(self, page_size: int = 50) -> List[Project]:
+        """
+
+        Args:
+            page_size:
+
+        Returns:
+
+        """
+        # TODO: This pagination implementation can
+        #  be generalized so it can be used elsewhere
+        projects = []
+        page = 1
+        while True:
+            response = self._transport.request("GET",
+                                               "/projects",
+                                               params={"page": page, "limit": page_size})
+            data = response.json()
+            items = [Project(**item) for item in data]
+
+            if not items:
+                break
+
+            projects.extend(items)
+            page += 1
+
+        return projects
 
     def get_project(self, project_id: str) -> Project:
         """
@@ -26,9 +49,81 @@ class ProjectsAPI:
         return Project(**response.json())
 
     def create_project(self, name: str, description: Optional[str] = None) -> Project:
+        """
+
+        Args:
+            name:
+            description:
+
+        Returns:
+
+        """
         payload = {
             "name": name,
             "description": description
         }
         response = self._transport.request("POST", "/projects", json=payload)
+        return Project(**response.json())
+
+
+class AsyncProjectsAPI:
+    def __init__(self, transport):
+        self._transport = transport
+
+    async def list_projects(self, page_size: int = 50) -> List[Project]:
+        """
+
+        Args:
+            page_size:
+
+        Returns:
+
+        """
+        projects = []
+        page = 1
+        while True:
+            response = await self._transport.request("GET",
+                                                     "/projects",
+                                                     params={"page": page, "limit": page_size})
+            data = response.json()
+            items = [Project(**item) for item in data]
+
+            if not items:
+                break
+
+            projects.extend(items)
+            page += 1
+
+        return projects
+
+    async def get_project(self, project_id: str) -> Project:
+        """
+
+        Args:
+            project_id:
+
+        Returns:
+
+        """
+        response = await self._transport.request("GET",
+                                                 f"/projects/{project_id}")
+        return Project(**response.json())
+
+    async def create_project(self, name: str, description: Optional[str] = None) -> Project:
+        """
+
+        Args:
+            name:
+            description:
+
+        Returns:
+
+        """
+        payload = {
+            "name": name,
+            "description": description
+        }
+        response = await self._transport.request("POST",
+                                                 "/projects",
+                                                 json=payload)
         return Project(**response.json())
