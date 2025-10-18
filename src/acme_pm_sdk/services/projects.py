@@ -1,12 +1,32 @@
-from typing import List, Optional
+from typing import List, Optional, AsyncIterator
 
 from acme_pm_sdk.models.project import Project
+from ..pagination import PageIterator
 
 # TODO: Retries and error mapping
 
 class ProjectsAPI:
     def __init__(self, transport):
         self._transport = transport
+
+    def list_page(self, page: int = 1, page_size: int = 50) -> List[Project]:
+        """
+
+        Args:
+            page:
+            page_size:
+
+        Returns:
+
+        """
+        response = self._transport.request("GET",
+                                           "/projects",
+                                           params={"page": page,
+                                                   "limit": page_size})
+        return [Project(**item) for item in response.json()]
+
+    def iter_all(self, page_size: int = 50) -> PageIterator[Project]:
+        return PageIterator(lambda page: self.list_page(page, page_size=page_size))
 
     def list_projects(self, page_size: int = 50) -> List[Project]:
         """
@@ -69,6 +89,24 @@ class ProjectsAPI:
 class AsyncProjectsAPI:
     def __init__(self, transport):
         self._transport = transport
+
+    async def list_page(self, page: int = 1, page_size: int = 50) -> List[Project]:
+        response = await self._transport.request("GET",
+                                                 "/projects",
+                                                 params={"page": page,
+                                                         "limit": page_size})
+        return [Project(**item) for item in response.json()]
+
+    async def iter_all(self, page_size: int = 50) -> AsyncIterator[Project]:
+        page = 1
+        while True:
+            items = await self.list_page(page=page, page_size=page_size)
+            if not items:
+                break
+
+            for item in items:
+                yield item
+            page += 1
 
     async def list_projects(self, page_size: int = 50) -> List[Project]:
         """
