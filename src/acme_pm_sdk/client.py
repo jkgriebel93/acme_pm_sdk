@@ -31,3 +31,12 @@ class AsyncAcmePMClient:
         self.projects = ProjectsAPI(self._transport)
         self.tasks = TasksAPI(self._transport)
         self.users = UsersAPI(self._transport)
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb):
+        await self.aclose()
+
+    async def aclose(self):
+        await self._transport._client.aclose()

@@ -1,7 +1,7 @@
 # This is the "transport" layer, meaning it handles HTTP operations.
 # Another module I don't like the name of. Can't think of what other SDKs call it though.
 import httpx
-from typing import Any, Optional
+from typing import Any, Optional, Mapping
 
 from acme_pm_sdk.errors import APIError, AuthenticationError, NotFoundError, RateLimitError
 
@@ -33,7 +33,7 @@ def raise_for_status(response: httpx.Response):
 
 
 class SyncTransport:
-    def __init__(self, base_url: str, headers: dict[str, str], timeout: Optional[httpx.Timeout] = None):
+    def __init__(self, base_url: str, headers: Mapping[str, str], timeout: Optional[httpx.Timeout] = None):
         """
 
         Args:

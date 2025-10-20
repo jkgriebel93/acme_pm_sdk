@@ -26,14 +26,17 @@ allow-direct-references = true
 # [tool.hatch.build.targets.wheel]
 # packages = [{ include = "acme_pm_sdk", from = "src" }]
 
-[tool.hatch.envs.default]
-dependencies = [
-    "pytest",
-    "respx",
-    "mypy",
-    "types-requests",
-    "ruff"
-]
-
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "black>=25.9.0",
+    "isort>=7.0.0",
+    "mypy>=1.18.2",
+    "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
+    "respx>=0.22.0",
+    "ruff>=0.14.1",
+    "types-requests>=2.32.4.20250913",
+]
