@@ -1,0 +1,46 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  publish:
+    if: false
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to CodeArtifact
+        run: |
+          aws codeartifact login \
+            --tool twine \
+            --domain ${{ secrets.CODEARTIFACT_DOMAIN }} \
+            --domain-owner ${{ secrets.AWS_ACCOUNT_ID }} \
+            --repository ${{ secrets.CODEARTIFACT_REPOSITORY }} \
+            --region ${{ secrets.AWS_REGION }}
+
+      - name: Build
+        run: uv build
+
+      - name: Publish to CodeArtifact
+        run: twine upload --repository codeartifact dist/*
