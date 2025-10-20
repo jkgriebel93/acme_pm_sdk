@@ -45,7 +45,7 @@ class ProjectsAPI:
             response = self._transport.request("GET",
                                                "/projects",
                                                params={"page": page, "limit": page_size})
-            data = response.json()
+            data = response.json()["data"]
             items = [Project(**item) for item in data]
 
             if not items:
@@ -65,7 +65,7 @@ class ProjectsAPI:
         Returns:
 
         """
-        response = self._transport.request("GET", t"f/projects/{project_id}")
+        response = self._transport.request("GET", f"/projects/{project_id}")
         return Project(**response.json())
 
     def create_project(self, name: str, description: Optional[str] = None) -> Project:

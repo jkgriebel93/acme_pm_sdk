@@ -31,6 +31,31 @@ def test_get_project(client: AcmePMClient):
     assert project.name == "Example Project"
     assert mock.called
 
+@respx.mock
+def test_get_project(client: AcmePMClient):
+    respx.get("https://api.example.com/projects/abc123").mock(
+        return_value=httpx.Response(200, json={"id": "abc123", "name": "Example Project"})
+    )
+
+    project = client.projects.get_project("abc123")
+    assert isinstance(project, Project)
+    assert project.id == "abc123"
+
+@respx.mock
+def test_list_projects(client: AcmePMClient):
+    # TODO: Fix mock response so that infinite loop doesn't happen
+    respx.get("https://api.example.com/projects").mock(
+        return_value=httpx.Response(200, json={"data": [
+            {"id": "p1", "name": "Alpha"},
+            {"id": "p2", "name": "Beta"},
+        ]})
+    )
+
+    projects = client.projects.list_projects()
+    assert len(projects) == 2
+    assert all(isinstance(p, Project) for p in projects)
+    assert projects[0].name == "Alpha"
+
 
 # Async version
 @pytest.mark.asyncio
